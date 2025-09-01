@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="menu_estate_root" name="Inmobiliaria" />
+    <menuitem
+        id="menu_estate_advertisements"
+        name="Anuncios"
+        parent="menu_estate_root"
+    />
+    <menuitem
+        id="menu_estate_property"
+        name="Propiedades"
+        parent="menu_estate_advertisements"
+        action="estate_property_action"
+    />
+</odoo>

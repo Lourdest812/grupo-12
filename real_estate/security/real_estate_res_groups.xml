@@ -1,0 +1,24 @@
+<odoo>
+        <!-- Categoria Inmobiliaria -->
+    <record id="group_category_real_estate" model="ir.module.category">
+        <field name="name">Inmobiliaria</field>
+        <field name="sequence">10</field>
+    </record>
+    <!-- Grupo Manager de Propiedades -->
+    <record id="group_real_estate_manager" model="res.groups">
+        <field name="name">Manager de Propiedades</field>
+        <field
+            name="category_id"
+            ref="group_category_real_estate"
+        /> <!-- Usar una categoría existente -->
+    </record>
+
+    <!-- Grupo Vendedor de Propiedades -->
+    <record id="group_property_seller" model="res.groups">
+        <field name="name">Vendedor de Propiedades</field>
+        <field
+            name="category_id"
+            ref="group_category_real_estate"
+        /> <!-- Misma categoría -->
+    </record>
+</odoo>

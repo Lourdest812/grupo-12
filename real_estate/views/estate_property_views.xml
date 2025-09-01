@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <!-- ===============================
+         VISTAS DEL MODELO estate.property
+    ================================ -->
+
+    <!-- Vista lista -->
+    <record id="view_estate_property_list" model="ir.ui.view">
+        <field name="name">estate.property.list</field>
+        <field name="model">estate.property</field>
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+            <list string="Propiedades">
+                <field name="name" />
+                <field name="postcode" />
+                <field name="date_availability" />
+                <field name="garden_orientation" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista formulario (form) -->
+    <record id="view_estate_property_form" model="ir.ui.view">
+        <field name="name">estate.property.form</field>
+        <field name="model">estate.property</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Propiedad">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="postcode" />
+                        <field name="date_availability" />
+                        <field name="garden_orientation" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===============================
+         ACCIÓN PARA ABRIR EL MODELO
+    ================================ -->
+    <record id="estate_property_action" model="ir.actions.act_window">
+        <field name="name">Propiedades</field>
+        <field name="res_model">estate.property</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_estate_property_list" />
+    </record>
+
+    <!-- ===============================
+         MENÚS
+    ================================ -->
+    <menuitem id="menu_estate_root" name="Inmobiliaria" />
+    <menuitem
+        id="menu_estate_advertisements"
+        name="Anuncios"
+        parent="menu_estate_root"
+    />
+    <menuitem
+        id="menu_estate_property"
+        name="Propiedades"
+        parent="menu_estate_advertisements"
+        action="estate_property_action"
+    />
+
+</odoo>
