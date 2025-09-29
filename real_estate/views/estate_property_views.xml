@@ -182,7 +182,7 @@
                     <filter name="grp_creator" string="Creador" context="{'group_by':'create_uid'}"/>
                     <filter name="grp_postcode" string="Código Postal" context="{'group_by':'postcode'}"/>
                     <filter name="grp_type" string="Tipo" context="{'group_by':'property_type_id'}"/>
-                <group/>
+                </group>
             </search>
             </field>
     </record>

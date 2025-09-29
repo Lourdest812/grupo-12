@@ -7,32 +7,18 @@
     <!-- Grupo Manager de Propiedades -->
     <record id="group_real_estate_manager" model="res.groups">
         <field name="name">Manager de Propiedades</field>
-<<<<<<< HEAD
-        <field
-            name="category_id"
-            ref="group_category_real_estate"
-        /> <!-- Usar una categoría existente -->
-=======
         <!--<field
             name="category_id"
             ref="group_category_real_estate"
         />-->
->>>>>>> feature/real_estate_U2-16
     </record>
 
     <!-- Grupo Vendedor de Propiedades -->
     <record id="group_property_seller" model="res.groups">
         <field name="name">Vendedor de Propiedades</field>
-<<<<<<< HEAD
-        <field
-            name="category_id"
-            ref="group_category_real_estate"
-        /> <!-- Misma categoría -->
-=======
         <!--<field
             name="category_id"
             ref="group_category_real_estate"
         />  Misma categoría -->
->>>>>>> feature/real_estate_U2-16
     </record>
 </odoo>

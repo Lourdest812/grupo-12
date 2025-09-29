@@ -1,36 +1,3 @@
-<<<<<<< HEAD
-from odoo import models, fields
-
-
-class EstatePropertyOffer(models.Model):
-    _name = "estate.property.offer"
-    _description = "Oferta sobre propiedad"
-
-    price = fields.Float(
-        string="Precio",
-        required=True,
-    )
-
-    status = fields.Selection(
-        selection=[
-            ("accepted", "Aceptada"),
-            ("refused", "Rechazada"),
-        ],
-        string="Estado",
-    )
-
-    partner_id = fields.Many2one(
-        comodel_name="res.partner",
-        string="Ofertante",
-        required=True
-    )
-
-    property_id = fields.Many2one(
-        comodel_name="estate.property",
-        string="Propiedad",
-        required=True
-    )
-=======
 from datetime import timedelta
 from odoo import models, fields,api
 
@@ -103,4 +70,3 @@ class EstatePropertyOffer(models.Model):
 
         # Rechazar otras ofertas
         (offer.property_id.offer_ids - offer).write({'status': 'refused'})
->>>>>>> feature/real_estate_U2-16

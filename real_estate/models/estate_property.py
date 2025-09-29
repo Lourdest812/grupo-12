@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-from odoo import models, fields
-from datetime import timedelta
-
-=======
 from odoo import models, fields, api
 from datetime import timedelta
 from odoo.exceptions import UserError
->>>>>>> feature/real_estate_U2-16
 
 class EstateProperty(models.Model):
     _name = "estate.property"
@@ -16,10 +10,6 @@ class EstateProperty(models.Model):
     description = fields.Text(string="Descripcion")
     postcode = fields.Char(string="Codigo Postal")
 
-<<<<<<< HEAD
-    # a) Tipo Propiedad -> estate.property.type
-=======
->>>>>>> feature/real_estate_U2-16
     property_type_id = fields.Many2one(
         "estate.property.type",
         string="Tipo Propiedad",
@@ -27,10 +17,6 @@ class EstateProperty(models.Model):
         index=True,
     )
 
-<<<<<<< HEAD
-    # b) Comprador -> res.partner
-=======
->>>>>>> feature/real_estate_U2-16
     buyer_id = fields.Many2one(
         "res.partner",
         string="Comprador",
@@ -38,10 +24,6 @@ class EstateProperty(models.Model):
         index=True,
     )
 
-<<<<<<< HEAD
-    # c) Vendedor -> res.users | no copiar al duplicar | default = usuario logueado
-=======
->>>>>>> feature/real_estate_U2-16
     salesman_id = fields.Many2one(
         "res.users",
         string="Vendedor",
@@ -65,10 +47,6 @@ class EstateProperty(models.Model):
         string="Ofertas",
     )
 
-<<<<<<< HEAD
-    # Fecha por defecto: hoy + 3 meses (~90 días)
-=======
->>>>>>> feature/real_estate_U2-16
     date_availability = fields.Date(
         string="Fecha de disponibilidad",
         default=lambda self: fields.Date.today() + timedelta(days=90),
@@ -76,21 +54,11 @@ class EstateProperty(models.Model):
     )
 
     expected_price = fields.Float(string="Precio esperado")
-<<<<<<< HEAD
-
-    # No copiar al duplicar
-    sellind_price = fields.Float(string="Precio de venta", copy=False)
-
-    bedrooms = fields.Integer(string="Habitaciones", default=2)
-    living_area = fields.Integer(string="Superficie Cubierta")
-    Facade = fields.Integer(string="Fachadas")
-=======
     selling_price = fields.Float(string="Precio de venta", copy=False)
 
     bedrooms = fields.Integer(string="Habitaciones", default=2)
     living_area = fields.Integer(string="Superficie Cubierta")
     facade = fields.Integer(string="Fachadas")
->>>>>>> feature/real_estate_U2-16
     garage = fields.Boolean(string="Garage")
     garden = fields.Boolean(string="Jardin")
     garden_orientation = fields.Selection(
@@ -113,8 +81,6 @@ class EstateProperty(models.Model):
         string="Estado",
         required=True,
     )
-<<<<<<< HEAD
-=======
 
 
     def action_sold(self):
@@ -170,4 +136,3 @@ class EstateProperty(models.Model):
                         'message': "El precio esperado es menor a 10.000. Por favor, verifica si ingresaste el valor correctamente.",
                     }
                 }
->>>>>>> feature/real_estate_U2-16
