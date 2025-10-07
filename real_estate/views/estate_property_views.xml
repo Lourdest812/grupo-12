@@ -14,7 +14,7 @@
                 <field name="bedrooms" string="Habitaciones"/>
                 <field name="living_area" string="Superficie Cubierta"/>
                 <field name="expected_price" string="Precio esperado"/>
-                <field name="sellind_price" string="Precio de venta"/>
+                <field name="selling_price" string="Precio de venta"/>
                 <field name="date_availability" string="Fecha de disponibilidad"/>
                 <field name="property_type_id" string="Tipo"/>
                 <field name="state" string="Estado"/>
@@ -22,7 +22,7 @@
         </field>
     </record>
 
-    <!-- FORM CLÁSICO (secundario) -->
+        <!-- FORM CLÁSICO (secundario) -->
     <record id="view_estate_property_form" model="ir.ui.view">
         <field name="name">estate.property.form</field>
         <field name="model">estate.property</field>
@@ -30,8 +30,10 @@
         <field name="arch" type="xml">
             <form string="Propiedad">
                 <header>
+                    <button name="action_sold" type="object" string="Marcar como vendida"/>
+                    <button name="action_cancel" type="object" string="Cancelar"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
+                        statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
                 </header>
                 <sheet>
                     <group>
@@ -46,12 +48,12 @@
                     </group>
                     <group>
                         <field name="expected_price"/>
-                        <field name="sellind_price"/>
+                        <field name="selling_price"/>
                     </group>
                     <group>
                         <field name="bedrooms"/>
                         <field name="living_area"/>
-                        <field name="Facade"/>
+                        <field name="facade"/>
                     </group>
                     <group>
                         <field name="garage"/>
@@ -73,8 +75,10 @@
         <field name="arch" type="xml">
             <form string="Propiedad">
                 <header>
+                    <button name="action_sold" type="object" string="Marcar como vendida"/>
+                    <button name="action_cancel" type="object" string="Cancelar"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
+                        statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -95,7 +99,7 @@
                         </group>
                         <group>
                             <field name="expected_price" string="Precio esperado"/>
-                            <field name="sellind_price" string="Precio de venta"/>
+                            <field name="selling_price" string="Precio de venta"/>
                         </group>
                     </group>
 
@@ -106,13 +110,15 @@
                                     <field name="description" string="Descripción"/>
                                     <field name="bedrooms" string="Habitaciones"/>
                                     <field name="living_area" string="Superficie Cubierta"/>
-                                    <field name="Facade" string="Fachadas"/>
+                                    <field name="facade" string="Fachadas"/>
                                     <field name="garage" string="Garage"/>
                                 </group>
                                 <group>
                                     <field name="garden" string="Jardín"/>
                                     <field name="garden_area" string="Superficie del jardín"/>
                                     <field name="garden_orientation" string="Orientación del jardín"/>
+                                    <field name="total_area" readonly="1"/>
+                                    <field name="best_offer" readonly="1"/>
                                 </group>
                             </group>
                         </page>
@@ -125,10 +131,15 @@
                                 </group>
                             </group>
                         </page>
-
-                        <!-- NUEVA página: Ofertas -->
                         <page string="Ofertas">
-                            <field name="offer_ids"/>
+                            <field name="offer_ids">
+                                <list string="Ofertas">
+                                    <field name="partner_id"/>
+                                    <field name="price"/>
+                                    <field name="status"/>
+                                    <button name="action_accept_offer" type="object" string="Aceptar"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -149,35 +160,30 @@
 
     <!-- BÚSQUEDA -->
     <record id="view_estate_property_search" model="ir.ui.view">
-        <field name="name">estate.property.search</field>
+        <field name="name">estate.property.search.view</field>
         <field name="model">estate.property</field>
         <field name="arch" type="xml">
-            <search string="Buscar Propiedades">
-                <field name="name" string="Título"/>
-                <field name="postcode" string="Código Postal"/>
-                <field name="expected_price" string="Precio esperado"/>
-                <field name="bedrooms" string="Habitaciones"/>
-                <field name="living_area" string="Superficie cubierta"/>
-                <field name="Facade" string="Fachadas"/>
-                <field name="property_type_id" string="Tipo"/>
+            <search>
+                <field name="name"/>
+                <field name="postcode"/>
+                <field name="expected_price"/>
+                <field name="bedrooms"/>
+                <field name="living_area"/>
+                <field name="property_type_id"/>
 
                 <filter name="available_props"
-                        string="Disponibles"
-                        domain="[('state','in',('new','offer_received'))]"/>
-
+                    string="Disponibles"
+                    domain="[('state','in',['new','offer_received'])]"/>
                 <filter name="my_records"
-                        string="Mis registros"
-                        domain="[('create_uid', '=', uid)]"/>
-
+                    string="Mis registros"
+                    domain="[('create_uid','=',uid)]"/>
                 <group expand="0" string="Agrupar por">
-                    <filter name="grp_state"    string="Estado"        context="{'group_by': 'state'}"/>
-                    <filter name="grp_creator"  string="Creador"       context="{'group_by': 'create_uid'}"/>
-                    <filter name="grp_month"    string="Mes de creación" context="{'group_by': 'create_date:month'}"/>
-                    <filter name="grp_postcode" string="Código Postal" context="{'group_by': 'postcode'}"/>
-                    <filter name="grp_type"     string="Tipo"          context="{'group_by': 'property_type_id'}"/>
+                    <filter name="grp_state" string="Estado" context="{'group_by':'state'}"/>
+                    <filter name="grp_creator" string="Creador" context="{'group_by':'create_uid'}"/>
+                    <filter name="grp_postcode" string="Código Postal" context="{'group_by':'postcode'}"/>
+                    <filter name="grp_type" string="Tipo" context="{'group_by':'property_type_id'}"/>
                 </group>
             </search>
-        </field>
+            </field>
     </record>
-
 </odoo>
