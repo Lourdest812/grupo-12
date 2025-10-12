@@ -6,12 +6,47 @@
         <field name="name">estate.property.offer.list</field>
         <field name="model">estate.property.offer</field>
         <field name="arch" type="xml">
-            <list string="Ofertas" editable="top">
-                <field name="price" string="Precio"/>
-                <field name="partner_id" string="Ofertante"/>
-                <field name="status" string="Estado"/>
+            <list string="Ofertas">
+                <field name="price"/>
+                <field name="partner_id"/>
+                <field name="status"/>
+                <field name="validity"/>
+                <field name="date_deadline"/>
+                <field name="property_type_id"/>
             </list>
         </field>
     </record>
+    <!-- FORMULARIO de Oferta -->
+    <record id="view_estate_property_offer_form" model="ir.ui.view">
+        <field name="name">estate.property.offer.form</field>
+        <field name="model">estate.property.offer</field>
+        <field name="arch" type="xml">
+            <form string="Oferta">
+                <sheet>
+                    <group>
+                        <field name="price"/>
+                        <field name="partner_id"/>
+                        <field name="status"/>
+                        <field name="validity"/>
+                        <field name="date_deadline"/>
+                        <field name="property_id"/>
+                        <field name="property_type_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ACCIÓN para abrir la lista de ofertas -->
+    <record id="action_estate_property_offer" model="ir.actions.act_window">
+        <field name="name">Ofertas</field>
+        <field name="res_model">estate.property.offer</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- MENÚ para acceder a las ofertas -->
+    <menuitem id="menu_estate_property_offer_root"
+          name="Ofertas"
+          action="action_estate_property_offer"/>
 
 </odoo>
