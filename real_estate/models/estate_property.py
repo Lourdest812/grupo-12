@@ -1,6 +1,9 @@
 from odoo import models, fields, api
 from datetime import timedelta
 from odoo.exceptions import UserError
+from odoo.tools import float_round
+import random
+
 
 class EstateProperty(models.Model):
     _name = "estate.property"
@@ -47,6 +50,21 @@ class EstateProperty(models.Model):
         string="Ofertas",
     )
 
+    # --- Personas que ofertaron (computado y almacenado)
+    offer_partner_ids = fields.Many2many(
+        comodel_name="res.partner",
+        string="Personas que ofertaron",
+        compute="_compute_offer_partner_ids",
+        store=True,
+        readonly=True,
+    )
+
+    @api.depends('offer_ids.partner_id')
+    def _compute_offer_partner_ids(self):
+        for rec in self:
+            partners = rec.offer_ids.mapped('partner_id')
+            rec.offer_partner_ids = [(6, 0, partners.ids)]
+
     date_availability = fields.Date(
         string="Fecha de disponibilidad",
         default=lambda self: fields.Date.today() + timedelta(days=90),
@@ -82,7 +100,7 @@ class EstateProperty(models.Model):
         required=True,
     )
 
-
+    # ---------------- Acciones varias ----------------
     def action_sold(self):
         for rec in self:
             if rec.state == 'canceled':
@@ -121,10 +139,7 @@ class EstateProperty(models.Model):
     @api.onchange('garden')
     def _onchange_garden(self):
         for record in self:
-            if record.garden:
-                record.garden_area = 10
-            else:
-                record.garden_area = 0
+            record.garden_area = 10 if record.garden else 0
 
     @api.onchange('expected_price')
     def _onchange_expected_price(self):
@@ -136,3 +151,73 @@ class EstateProperty(models.Model):
                         'message': "El precio esperado es menor a 10.000. Por favor, verifica si ingresaste el valor correctamente.",
                     }
                 }
+
+    # -------------- Punto 20: Generar oferta automática --------------
+    def action_generate_auto_offer(self):
+        for rec in self:
+            if not rec.expected_price:
+                raise UserError("Definí el 'Precio esperado' antes de generar ofertas.")
+
+            candidates = self.env['res.partner'].search([
+                ('active', '=', True),
+                ('id', 'not in', rec.offer_partner_ids.ids),
+            ])
+            if not candidates:
+                raise UserError("No hay contactos activos disponibles que no hayan ofertado esta propiedad.")
+
+            partner = random.choice(candidates)
+            factor = 1 + random.uniform(-0.30, 0.30)   # +/- 30%
+            price = float_round(rec.expected_price * factor, precision_digits=2)
+
+            self.env['estate.property.offer'].create({
+                'price': price,
+                'partner_id': partner.id,
+                'property_id': rec.id,
+            })
+
+            if rec.state == 'new':
+                rec.state = 'offer_received'
+        return True
+
+    # -------------- Punto 21: botones de etiquetas --------------
+    def action_clear_tags(self):
+        """Sacar etiquetas: desvincula todas las etiquetas actuales"""
+        for rec in self:
+            rec.write({'tag_ids': [(6, 0, [])]})
+        return True
+
+    def action_load_all_tags(self):
+        """Cargar todas las etiquetas existentes en el sistema"""
+        all_tag_ids = self.env['estate.property.tag'].search([]).ids
+        for rec in self:
+            rec.write({'tag_ids': [(6, 0, all_tag_ids)]})
+        return True
+
+    def action_tag_new(self):
+        """
+        'A estrenar': crea la etiqueta si no existe y la vincula
+        (si existe, solo vincular).
+        """
+        Tag = self.env['estate.property.tag']
+        tag = Tag.search([('name', '=', 'A estrenar')], limit=1)
+        if not tag:
+            tag = Tag.create({'name': 'A estrenar'})
+        for rec in self:
+            rec.write({'tag_ids': [(4, tag.id)]})
+        return True
+
+    # -------------- Punto 22: permitir borrar solo 'new' o 'canceled' --------------
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_new_or_cancelled(self):
+        """
+        Solo permite borrar propiedades cuando el estado es 'new' o 'canceled'.
+        Si alguna no cumple, se bloquea el borrado con un error.
+        """
+        invalid = self.filtered(lambda r: r.state not in ('new', 'canceled'))
+        if invalid:
+            names = ", ".join(invalid.mapped('name'))
+            raise UserError(
+                "Solo se pueden borrar propiedades en estado 'Nuevo' o 'Cancelado'. "
+                f"No cumplen: {names}"
+            )
+        # Si no hay inválidas, Odoo continúa con unlink() normalmente.
