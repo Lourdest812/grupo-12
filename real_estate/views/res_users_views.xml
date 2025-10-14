@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="view_users_form_inherit_real_estate" model="ir.ui.view">
+    <field name="name">res.users.form.inherit.real.estate</field>
+    <field name="model">res.users</field>
+    <field name="inherit_id" ref="base.view_users_form"/>
+    <field name="arch" type="xml">
+
+      <!-- SMART BUTTON dentro de la button_box del sheet (no en header) -->
+      <xpath expr="//sheet//div[@name='button_box' or contains(@class,'oe_button_box')]" position="inside">
+        <button type="object"
+                name="action_open_user_properties"
+                class="oe_stat_button"
+                icon="fa-home">
+          <field name="property_count" widget="statinfo" string="Propiedades"/>
+        </button>
+      </xpath>
+
+      <!-- Pestaña 'Propiedades' mostrando el one2many (solo lectura) -->
+      <xpath expr="//sheet/notebook" position="inside">
+        <page string="Propiedades" name="tab_user_properties">
+          <field name="property_ids" nolabel="1" readonly="1"
+                 context="{'default_salesman_id': uid}"/>
+        </page>
+      </xpath>
+
+    </field>
+  </record>
+</odoo>

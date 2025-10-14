@@ -22,7 +22,7 @@
         </field>
     </record>
 
-        <!-- FORM CLÁSICO (secundario) -->
+    <!-- FORM CLÁSICO (secundario) -->
     <record id="view_estate_property_form" model="ir.ui.view">
         <field name="name">estate.property.form</field>
         <field name="model">estate.property</field>
@@ -33,9 +33,36 @@
                     <button name="action_sold" type="object" string="Marcar como vendida"/>
                     <button name="action_cancel" type="object" string="Cancelar"/>
                     <field name="state" widget="statusbar"
-                        statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
+                           statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
                 </header>
                 <sheet>
+
+                    <!-- Button Box (smart buttons) -->
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Punto 20 -->
+                        <button type="object"
+                                name="action_generate_auto_offer"
+                                class="oe_stat_button"
+                                icon="fa-magic"
+                                string="Oferta auto"/>
+                        <!-- Punto 21 -->
+                        <button type="object"
+                                name="action_clear_tags"
+                                class="oe_stat_button"
+                                icon="fa-eraser"
+                                string="Sacar etiquetas"/>
+                        <button type="object"
+                                name="action_load_all_tags"
+                                class="oe_stat_button"
+                                icon="fa-tags"
+                                string="Cargar etiquetas"/>
+                        <button type="object"
+                                name="action_tag_new"
+                                class="oe_stat_button"
+                                icon="fa-star"
+                                string="A estrenar"/>
+                    </div>
+
                     <group>
                         <field name="name"/>
                         <field name="tag_ids" string="Etiquetas" widget="many2many_tags"/>
@@ -62,6 +89,54 @@
                         <field name="garden_area"/>
                         <field name="state"/>
                     </group>
+
+                    <notebook>
+                        <page string="Descripción">
+                            <group>
+                                <group>
+                                    <field name="description" string="Descripción"/>
+                                    <field name="bedrooms" string="Habitaciones"/>
+                                    <field name="living_area" string="Superficie Cubierta"/>
+                                    <field name="facade" string="Fachadas"/>
+                                    <field name="garage" string="Garage"/>
+                                </group>
+                                <group>
+                                    <field name="garden" string="Jardín"/>
+                                    <field name="garden_area" string="Superficie del jardín"/>
+                                    <field name="garden_orientation" string="Orientación del jardín"/>
+                                    <field name="total_area" readonly="1"/>
+                                    <field name="best_offer" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Más info.">
+                            <group>
+                                <group>
+                                    <field name="buyer_id" string="Comprador"/>
+                                    <field name="salesman_id" string="Vendedor"/>
+                                </group>
+                                <group>
+                                    <field name="offer_partner_ids"
+                                           widget="many2many_tags"
+                                           readonly="1"
+                                           options="{'no_create': True}"
+                                           string="Personas que ofertaron"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Ofertas">
+                            <field name="offer_ids">
+                                <list string="Ofertas">
+                                    <field name="partner_id"/>
+                                    <field name="price"/>
+                                    <field name="status"/>
+                                    <button name="action_accept_offer" type="object" string="Aceptar"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -78,13 +153,39 @@
                     <button name="action_sold" type="object" string="Marcar como vendida"/>
                     <button name="action_cancel" type="object" string="Cancelar"/>
                     <field name="state" widget="statusbar"
-                        statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
+                           statusbar_visible="new,offer_received,offer_accepted,sold,canceled"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
                             <field name="name" class="oe_inline" placeholder="Nombre propiedad"/>
                         </h1>
+                    </div>
+
+                    <!-- Button Box (smart buttons) -->
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Punto 20 -->
+                        <button type="object"
+                                name="action_generate_auto_offer"
+                                class="oe_stat_button"
+                                icon="fa-magic"
+                                string="Oferta auto"/>
+                        <!-- Punto 21 -->
+                        <button type="object"
+                                name="action_clear_tags"
+                                class="oe_stat_button"
+                                icon="fa-eraser"
+                                string="Sacar etiquetas"/>
+                        <button type="object"
+                                name="action_load_all_tags"
+                                class="oe_stat_button"
+                                icon="fa-tags"
+                                string="Cargar etiquetas"/>
+                        <button type="object"
+                                name="action_tag_new"
+                                class="oe_stat_button"
+                                icon="fa-star"
+                                string="A estrenar"/>
                     </div>
 
                     <group>
@@ -129,8 +230,16 @@
                                     <field name="buyer_id" string="Comprador"/>
                                     <field name="salesman_id" string="Vendedor"/>
                                 </group>
+                                <group>
+                                    <field name="offer_partner_ids"
+                                           widget="many2many_tags"
+                                           readonly="1"
+                                           options="{'no_create': True}"
+                                           string="Personas que ofertaron"/>
+                                </group>
                             </group>
                         </page>
+
                         <page string="Ofertas">
                             <field name="offer_ids">
                                 <list string="Ofertas">
@@ -147,7 +256,7 @@
         </field>
     </record>
 
-    <!-- ACCIÓN (usa lista y form CUSTOM) -->
+    <!-- ACCIÓN -->
     <record id="estate_property_action" model="ir.actions.act_window">
         <field name="name">Propiedades</field>
         <field name="res_model">estate.property</field>
@@ -172,11 +281,12 @@
                 <field name="property_type_id"/>
 
                 <filter name="available_props"
-                    string="Disponibles"
-                    domain="[('state','in',['new','offer_received'])]"/>
+                        string="Disponibles"
+                        domain="[('state','in',['new','offer_received'])]"/>
                 <filter name="my_records"
-                    string="Mis registros"
-                    domain="[('create_uid','=',uid)]"/>
+                        string="Mis registros"
+                        domain="[('create_uid','=',uid)]"/>
+
                 <group expand="0" string="Agrupar por">
                     <filter name="grp_state" string="Estado" context="{'group_by':'state'}"/>
                     <filter name="grp_creator" string="Creador" context="{'group_by':'create_uid'}"/>
@@ -184,6 +294,7 @@
                     <filter name="grp_type" string="Tipo" context="{'group_by':'property_type_id'}"/>
                 </group>
             </search>
-            </field>
+        </field>
     </record>
+
 </odoo>
